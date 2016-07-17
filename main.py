@@ -229,15 +229,15 @@ def heartbeat(api_endpoint, access_token, response):
     heartbeat.ParseFromString(payload)
     return heartbeat
 
-    def safe_heartbeat(api_endpoint, access_token, response):
-        h = None
-        while h is None:
-            try:
-                h = heartbeat(api_endpoint, access_token, response)
-            except:
-                print('[-] Missed a heartbeat')
-                time.sleep(1)
-                continue
+def safe_heartbeat(api_endpoint, access_token, response):
+    h = None
+    while h is None:
+        try:
+            h = heartbeat(api_endpoint, access_token, response)
+        except:
+            print('[-] Missed a heartbeat')
+            time.sleep(1)
+            continue
 
 
 def main():
