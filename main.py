@@ -304,6 +304,9 @@ def main():
         set_location_coords(original_lat, original_long, 0)
 
         visible = []
+        wanted = [94, 149, 131, 143]
+        hated = [41, 16, 13, 10, 84, 19, 23, 98, 21, 29, 32, 72]
+        rarestop = False
 
         for hh in hs:
             for cell in hh.cells:
@@ -313,7 +316,7 @@ def main():
                         visible.append(wild)
                         seen.add(hash)
 
-        print('')
+        #print('')
         for cell in h.cells:
             if cell.NearbyPokemon:
                 other = LatLng.from_point(Cell(CellId(cell.S2CellId)).get_center())
@@ -322,11 +325,11 @@ def main():
                 difflat = diff.lat().degrees
                 difflng = diff.lng().degrees
                 direction = (('N' if difflat >= 0 else 'S') if abs(difflat) > 1e-4 else '')  + (('E' if difflng >= 0 else 'W') if abs(difflng) > 1e-4 else '')
-                print("Within one step of %s (%sm %s from you):" % (other, int(origin.get_distance(other).radians * 6366468.241830914), direction))
-                for poke in cell.NearbyPokemon:
-                    print('    (%s) %s' % (poke.PokedexNumber, pokemons[poke.PokedexNumber - 1]['Name']))
+                #print("Within one step of %s (%sm %s from you):" % (other, int(origin.get_distance(other).radians * 6366468.241830914), direction))
+                #for poke in cell.NearbyPokemon:
+                #    print('    (%s) %s' % (poke.PokedexNumber, pokemons[poke.PokedexNumber - 1]['Name']))
 
-        print('')
+        #print('')
         for poke in visible:
             other = LatLng.from_degrees(poke.Latitude, poke.Longitude)
             diff = other - origin
@@ -335,12 +338,20 @@ def main():
             difflng = diff.lng().degrees
             direction = (('N' if difflat >= 0 else 'S') if abs(difflat) > 1e-4 else '')  + (('E' if difflng >= 0 else 'W') if abs(difflng) > 1e-4 else '')
 
+            if poke.pokemon.PokemonId in wanted:
+                print("OMG FOUND A RARE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                rarestop = True
+            
+            if poke.pokemon.PokemonId in hated:
+                continue
+
             print("(%s) %s is visible at (%s, %s) for %s seconds (%sm %s from you)" % (poke.pokemon.PokemonId, pokemons[poke.pokemon.PokemonId - 1]['Name'], poke.Latitude, poke.Longitude, poke.TimeTillHiddenMs / 1000, int(origin.get_distance(other).radians * 6366468.241830914), direction))
 
         print('')
         walk = getNeighbors()
         next = LatLng.from_point(Cell(CellId(walk[2])).get_center())
-        if raw_input('The next cell is located at %s. Keep scanning? [Y/n]' % next) in {'n', 'N'}:
+        #if raw_input('The next cell is located at %s. Keep scanning? [Y/n]' % next) in {'n', 'N'}:
+        if rarestop:   
             break
         set_location_coords(next.lat().degrees, next.lng().degrees, 0)
 
