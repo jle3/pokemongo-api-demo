@@ -122,7 +122,7 @@ def api_req(api_endpoint, access_token, *mehs, **kw):
         except Exception, e:
             if DEBUG:
                 print(e)
-            print('[-] API request error, retrying')
+            #print('[-] API request error, retrying')
             time.sleep(1)
             continue
 
