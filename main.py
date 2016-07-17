@@ -116,8 +116,8 @@ def api_req(api_endpoint, access_token, *mehs, **kw):
                 print(p_ret)
                 print("\n\n")
 
-            print("[ ] Sleeping for 2 seconds to get around rate-limit.")
-            time.sleep(2)
+            #print("[ ] Sleeping for 2 seconds to get around rate-limit.")
+            #time.sleep(2)
             return p_ret
         except Exception, e:
             if DEBUG:
@@ -232,20 +232,6 @@ def heartbeat(api_endpoint, access_token, response):
     heartbeat.ParseFromString(payload)
     return heartbeat
 
-<<<<<<< HEAD
-def safe_heartbeat(api_endpoint, access_token, response):
-    h = None
-    while h is None:
-        try:
-            h = heartbeat(api_endpoint, access_token, response)
-        except:
-            print('[-] Missed a heartbeat')
-            time.sleep(1)
-            continue
-
-=======
->>>>>>> c3210e4efdc8b683f3f0b60e99bb492e1d96514d
-
 def main():
     pokemons = json.load(open('pokemon.json'))
     parser = argparse.ArgumentParser()
@@ -300,17 +286,17 @@ def main():
         original_long = FLOAT_LONG
         parent = CellId.from_lat_lng(LatLng.from_degrees(FLOAT_LAT, FLOAT_LONG)).parent(15)
 
-        h = safe_heartbeat(api_endpoint, access_token, response)
+        h = heartbeat(api_endpoint, access_token, response)
         hs = [h]
         seen = set([])
         for child in parent.children():
             latlng = LatLng.from_point(Cell(child).get_center())
             set_location_coords(latlng.lat().degrees, latlng.lng().degrees, 0)
-            hs.append(safe_heartbeat(api_endpoint, access_token, response))
+            hs.append(heartbeat(api_endpoint, access_token, response))
         set_location_coords(original_lat, original_long, 0)
 
         visible = []
-        wanted = [94, 149, 131, 143]
+        wanted = [94, 149, 131, 143, 151, 144, 145, 146, 130, 115, 103, 89, 71, 68, 76, 83]
         hated = [41, 16, 13, 10, 84, 19, 23, 98, 21, 29, 32, 72]
         rarestop = False
 
