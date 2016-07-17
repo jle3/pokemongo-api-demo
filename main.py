@@ -79,49 +79,52 @@ def get_location_coords():
     return (COORDS_LATITUDE, COORDS_LONGITUDE, COORDS_ALTITUDE)
 
 def api_req(api_endpoint, access_token, *mehs, **kw):
-    try:
-        p_req = pokemon_pb2.RequestEnvelop()
-        p_req.rpc_id = 1469378659230941192
+    while True:
+        try:
+            p_req = pokemon_pb2.RequestEnvelop()
+            p_req.rpc_id = 1469378659230941192
 
-        p_req.unknown1 = 2
+            p_req.unknown1 = 2
 
-        p_req.latitude, p_req.longitude, p_req.altitude = get_location_coords()
+            p_req.latitude, p_req.longitude, p_req.altitude = get_location_coords()
 
-        p_req.unknown12 = 989
+            p_req.unknown12 = 989
 
-        if 'useauth' not in kw or not kw['useauth']:
-            p_req.auth.provider = 'ptc'
-            p_req.auth.token.contents = access_token
-            p_req.auth.token.unknown13 = 14
-        else:
-            p_req.unknown11.unknown71 = kw['useauth'].unknown71
-            p_req.unknown11.unknown72 = kw['useauth'].unknown72
-            p_req.unknown11.unknown73 = kw['useauth'].unknown73
+            if 'useauth' not in kw or not kw['useauth']:
+                p_req.auth.provider = 'ptc'
+                p_req.auth.token.contents = access_token
+                p_req.auth.token.unknown13 = 14
+            else:
+                p_req.unknown11.unknown71 = kw['useauth'].unknown71
+                p_req.unknown11.unknown72 = kw['useauth'].unknown72
+                p_req.unknown11.unknown73 = kw['useauth'].unknown73
 
-        for meh in mehs:
-            p_req.MergeFrom(meh)
+            for meh in mehs:
+                p_req.MergeFrom(meh)
 
-        protobuf = p_req.SerializeToString()
+            protobuf = p_req.SerializeToString()
 
-        r = SESSION.post(api_endpoint, data=protobuf, verify=False)
+            r = SESSION.post(api_endpoint, data=protobuf, verify=False)
 
-        p_ret = pokemon_pb2.ResponseEnvelop()
-        p_ret.ParseFromString(r.content)
+            p_ret = pokemon_pb2.ResponseEnvelop()
+            p_ret.ParseFromString(r.content)
 
-        if DEBUG:
-            print("REQUEST:")
-            print(p_req)
-            print("Response:")
-            print(p_ret)
-            print("\n\n")
+            if DEBUG:
+                print("REQUEST:")
+                print(p_req)
+                print("Response:")
+                print(p_ret)
+                print("\n\n")
 
-        print("Sleeping for 2 seconds to get around rate-limit.")
-        time.sleep(2)
-        return p_ret
-    except Exception, e:
-        if DEBUG:
-            print(e)
-        return None
+            print("[ ] Sleeping for 2 seconds to get around rate-limit.")
+            time.sleep(2)
+            return p_ret
+        except Exception, e:
+            if DEBUG:
+                print(e)
+            print('[-] API request error, retrying')
+            time.sleep(1)
+            continue
 
 def get_profile(access_token, api, useauth, *reqq):
     req = pokemon_pb2.RequestEnvelop()
@@ -229,6 +232,7 @@ def heartbeat(api_endpoint, access_token, response):
     heartbeat.ParseFromString(payload)
     return heartbeat
 
+<<<<<<< HEAD
 def safe_heartbeat(api_endpoint, access_token, response):
     h = None
     while h is None:
@@ -239,6 +243,8 @@ def safe_heartbeat(api_endpoint, access_token, response):
             time.sleep(1)
             continue
 
+=======
+>>>>>>> c3210e4efdc8b683f3f0b60e99bb492e1d96514d
 
 def main():
     pokemons = json.load(open('pokemon.json'))
