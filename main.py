@@ -229,6 +229,17 @@ def heartbeat(api_endpoint, access_token, response):
     heartbeat.ParseFromString(payload)
     return heartbeat
 
+    def safe_heartbeat(api_endpoint, access_token, response):
+    h = None
+    while h is None:
+        try:
+            h = heartbeat(api_endpoint, access_token, response)
+        except:
+            print('[-] Missed a heartbeat')
+            time.sleep(1)
+            continue
+
+
 def main():
     pokemons = json.load(open('pokemon.json'))
     parser = argparse.ArgumentParser()
@@ -283,13 +294,13 @@ def main():
         original_long = FLOAT_LONG
         parent = CellId.from_lat_lng(LatLng.from_degrees(FLOAT_LAT, FLOAT_LONG)).parent(15)
 
-        h = heartbeat(api_endpoint, access_token, response)
+        h = safe_heartbeat(api_endpoint, access_token, response)
         hs = [h]
         seen = set([])
         for child in parent.children():
             latlng = LatLng.from_point(Cell(child).get_center())
             set_location_coords(latlng.lat().degrees, latlng.lng().degrees, 0)
-            hs.append(heartbeat(api_endpoint, access_token, response))
+            hs.append(safe_heartbeat(api_endpoint, access_token, response))
         set_location_coords(original_lat, original_long, 0)
 
         visible = []
