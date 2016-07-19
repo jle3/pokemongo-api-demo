@@ -1,1 +1,1 @@
-web: python main.py -u sukmydiglett -p hannibal15 -l "union square, San Francisco"
+worker: python main.py -u sukmydiglett -p hannibal15 -l "union square, San Francisco"
